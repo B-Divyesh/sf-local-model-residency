@@ -21,9 +21,11 @@ release_json="$work_dir/release.json"
 curl -fsSL -H 'Accept: application/vnd.github+json' "$api" -o "$release_json"
 asset_url="$(sed -n 's/.*"browser_download_url": "\([^"]*\)".*/\1/p' "$release_json" | grep -E "$pattern" | head -n 1)"
 [ -n "$asset_url" ] || { echo "A matching download is not published yet." >&2; exit 1; }
+release_tag="$(sed -n 's/.*"tag_name": "\([^"]*\)".*/\1/p' "$release_json" | head -n 1)"
+[ -n "$release_tag" ] || { echo "The release tag could not be read." >&2; exit 1; }
 
 asset_name="${asset_url##*/}"
-curl -fsSL "https://github.com/$repo/releases/latest/download/SHA256SUMS" -o "$work_dir/SHA256SUMS"
+curl -fsSL "https://github.com/$repo/releases/download/$release_tag/SHA256SUMS?release=$release_tag" -o "$work_dir/SHA256SUMS"
 curl -fL "$asset_url" -o "$work_dir/$asset_name"
 expected="$(grep "  $asset_name$" "$work_dir/SHA256SUMS" | cut -d ' ' -f 1)"
 [ -n "$expected" ] || { echo "No checksum was published for $asset_name." >&2; exit 1; }

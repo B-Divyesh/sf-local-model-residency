@@ -73,3 +73,5 @@ Claim definitions and exact commands are in `.factory/claims.json`. Demo details
 ## Release
 
 The `v0.1.0` tag triggers `.github/workflows/release.yml`. The matrix publishes arm64 and x86_64 macOS DMGs, Windows MSI and EXE installers, Linux AppImage and DEB packages, `SHA256SUMS`, and `latest.json`.
+
+Release: `https://github.com/B-Divyesh/sf-local-model-residency/releases/tag/v0.1.0`. All six platform assets are published. The Linux DEB was downloaded from the release and matched against the published SHA-256 entry.
