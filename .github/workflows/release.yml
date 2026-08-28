@@ -95,9 +95,10 @@ jobs:
           with open("latest.json", "w", encoding="utf-8") as handle:
               json.dump(payload, handle, indent=2)
           PY
-      - uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v0.1.0' }}
-          files: |
-            SHA256SUMS
-            latest.json
+      - name: Publish checksums and release manifest
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          [[ "$tag" == v* ]] || tag="v0.1.0"
+          gh release upload "$tag" SHA256SUMS latest.json --clobber
