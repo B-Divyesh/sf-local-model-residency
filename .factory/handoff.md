@@ -44,6 +44,7 @@ Recorded local results on 2026-08-28:
 - Vitest: 4 passed.
 - Playwright: 23 passed across desktop Chromium and a 390 px mobile viewport; 1 inapplicable project case skipped.
 - Rust: 2 passed; doc tests passed.
+- Native package smoke test: Linux `.deb` built successfully with Tauri 2.11.
 - Axe: no serious or critical findings on all routes, in light and dark treatments.
 - Browser smoke test: one `h1`, one `main`, `lang=en`, all images have alt text, and no console errors.
 - Production site bundle: 7.55 KB JavaScript gzip and 4.83 KB CSS gzip.
