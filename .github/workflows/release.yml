@@ -101,4 +101,4 @@ jobs:
         run: |
           tag="${GITHUB_REF_NAME}"
           [[ "$tag" == v* ]] || tag="v0.1.0"
-          gh release upload "$tag" SHA256SUMS latest.json --clobber
+          gh release upload "$tag" SHA256SUMS latest.json --clobber --repo "$GITHUB_REPOSITORY"
