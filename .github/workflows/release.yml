@@ -1,0 +1,99 @@
+name: Release desktop apps
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            bundles: dmg
+            artifact: macos-arm64
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            bundles: dmg
+            artifact: macos-x64
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            bundles: msi,nsis
+            artifact: windows-x64
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+            bundles: appimage,deb
+            artifact: linux-x64
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - name: Install Linux system packages
+        if: matrix.platform == 'ubuntu-22.04'
+        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: Local Model Residency v__VERSION__
+          releaseBody: |
+            Local model memory diagnostics for macOS, Windows, and Linux.
+
+            These builds are unsigned. On macOS, right-click the app and choose Open. Windows may show a SmartScreen notice.
+          releaseDraft: false
+          prerelease: false
+          args: --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
+            src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
+          if-no-files-found: error
+
+  metadata:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: release-assets
+          merge-multiple: true
+      - name: Build checksums and release manifest
+        shell: bash
+        run: |
+          find release-assets -type f -exec cp {} . \;
+          sha256sum *.dmg *.msi *.exe *.AppImage *.deb 2>/dev/null | sort -k2 > SHA256SUMS
+          python3 - <<'PY'
+          import glob, json, os
+          tag = os.environ.get("GITHUB_REF_NAME", "v0.1.0")
+          repo = os.environ["GITHUB_REPOSITORY"]
+          files = sorted(sum((glob.glob(pattern) for pattern in ("*.dmg", "*.msi", "*.exe", "*.AppImage", "*.deb")), []))
+          payload = {"version": tag.removeprefix("v"), "tag": tag, "assets": {os.path.basename(path): f"https://github.com/{repo}/releases/download/{tag}/{os.path.basename(path)}" for path in files}}
+          with open("latest.json", "w", encoding="utf-8") as handle:
+              json.dump(payload, handle, indent=2)
+          PY
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'v0.1.0' }}
+          files: |
+            SHA256SUMS
+            latest.json
+
