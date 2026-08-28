@@ -79,7 +79,11 @@ jobs:
       - name: Build checksums and release manifest
         shell: bash
         run: |
-          find release-assets -type f -exec cp {} . \;
+          while IFS= read -r -d '' file; do
+            name="$(basename "$file")"
+            normalized="${name// /.}"
+            cp "$file" "$normalized"
+          done < <(find release-assets -type f -print0)
           sha256sum *.dmg *.msi *.exe *.AppImage *.deb 2>/dev/null | sort -k2 > SHA256SUMS
           python3 - <<'PY'
           import glob, json, os
