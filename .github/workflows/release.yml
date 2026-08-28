@@ -83,7 +83,8 @@ jobs:
           sha256sum *.dmg *.msi *.exe *.AppImage *.deb 2>/dev/null | sort -k2 > SHA256SUMS
           python3 - <<'PY'
           import glob, json, os
-          tag = os.environ.get("GITHUB_REF_NAME", "v0.1.0")
+          ref = os.environ.get("GITHUB_REF_NAME", "")
+          tag = ref if ref.startswith("v") else "v0.1.0"
           repo = os.environ["GITHUB_REPOSITORY"]
           files = sorted(sum((glob.glob(pattern) for pattern in ("*.dmg", "*.msi", "*.exe", "*.AppImage", "*.deb")), []))
           payload = {"version": tag.removeprefix("v"), "tag": tag, "assets": {os.path.basename(path): f"https://github.com/{repo}/releases/download/{tag}/{os.path.basename(path)}" for path in files}}
@@ -96,4 +97,3 @@ jobs:
           files: |
             SHA256SUMS
             latest.json
-

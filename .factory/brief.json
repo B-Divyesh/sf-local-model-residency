@@ -1,0 +1,23 @@
+{
+  "slug": "local-model-residency",
+  "title": "Local Model Residency",
+  "summary": "See which local runtime holds each model and when it reloads",
+  "territory": "utilities",
+  "user": "Privacy-conscious desktop users who run local models but need a plain explanation of model memory residency, unload/reload churn and which local client is consuming GPU/RAM.",
+  "evidence": [
+    { "url": "https://hn.algolia.com/api/v1/items/47621077", "date": "2026-04-02", "quote_or_summary": "Asks why ready-to-use offline desktop LLMs remain hard for ordinary users despite privacy and connectivity advantages." },
+    { "url": "https://github.com/dbeaver/dbeaver/issues/36951", "date": "2025-01-29", "quote_or_summary": "Feature request says DBeaver Community lacks local-Ollama integration, showing sustained demand to keep AI-assisted workflows local instead of tied to a hosted tier." }
+  ],
+  "recurrence": "The 2026 audience request is for a ready working local experience; a separate local-runtime request shows technically capable users also prioritize local operation over hosted-only features.",
+  "current_workaround": "Watch Activity Monitor/nvidia-smi, guess at keep-alive settings, or restart clients when a model becomes slow.",
+  "incumbents_and_gap": "Ollama, LM Studio and Jan run models; system monitors show processes. The gap is a small vendor-neutral tray utility that translates runtime/model ownership and churn into actionable local diagnostics.",
+  "smallest_useful_product": "Menu-bar/tray app that reads supported local-runtime status endpoints and OS process metrics, shows model load owner, GPU/RAM footprint, reload events and a safe copyable diagnostic bundle. Non-goals: model download, prompt logging, model serving, chat UI or cloud inference.",
+  "success_measure": "In reproduced two-client tests, it attributes 90% of load/unload events to a process/runtime and users identify the reload source without opening a terminal.",
+  "artifact_class": "desktop-app",
+  "monetization": "free — broad runtime support and trust matter more than monetizing a diagnostic; paid enterprise adapters can follow.",
+  "constraints": "No prompt/completion collection; query only documented local endpoints; disclose incomplete attribution; keep diagnostics local unless explicitly exported.",
+  "est_build_effort": "S",
+  "why_distinct": "It makes local-model resource behavior understandable without becoming another model launcher or chat client.",
+  "confidence": 4,
+  "state": "BUILT"
+}

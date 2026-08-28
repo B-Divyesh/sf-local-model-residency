@@ -65,18 +65,22 @@ struct ProcessMatch {
 }
 
 fn process_for(system: &System, terms: &[&str]) -> Option<ProcessMatch> {
-    system.processes().iter().find_map(|(pid, process)| {
-        let name = process.name().to_string_lossy().to_string();
-        let lowered = name.to_lowercase();
-        terms
-            .iter()
-            .any(|term| lowered.contains(term))
-            .then(|| ProcessMatch {
-                name,
-                pid: pid.as_u32(),
-                memory: process.memory(),
-            })
-    })
+    system
+        .processes()
+        .iter()
+        .filter_map(|(pid, process)| {
+            let name = process.name().to_string_lossy().to_string();
+            let lowered = name.to_lowercase();
+            terms
+                .iter()
+                .any(|term| lowered.contains(term))
+                .then(|| ProcessMatch {
+                    name,
+                    pid: pid.as_u32(),
+                    memory: process.memory(),
+                })
+        })
+        .max_by_key(|process| process.memory)
 }
 
 fn ollama_models(body: &str, process: Option<&ProcessMatch>) -> Result<Vec<ModelRecord>, String> {
@@ -320,6 +324,7 @@ mod tests {
         assert_eq!(models.len(), 1);
         assert_eq!(models[0].runtime, "Ollama");
         assert_eq!(models[0].vram_bytes, 4_821_114_880);
+        assert_eq!(models[0].process_ram_bytes, Some(612_000_000));
         assert_eq!(models[0].confidence, "confirmed");
     }
 

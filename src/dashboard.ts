@@ -43,7 +43,8 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
 
   const render = () => {
     const selectedModel = scan?.models.find((model) => model.id === selected) ?? scan?.models[0];
-    host.innerHTML = `<section class="observatory${options.embedded ? " observatory-embedded" : ""}" aria-label="Model residency monitor">
+    const desktopDemo = demo && !options.demo && !options.embedded;
+    host.innerHTML = `${desktopDemo ? `<div class="in-app-demo" role="status"><strong>Demo — sample data, nothing is saved</strong><span><button data-action="reset">Reset demo</button><button data-action="real">Start for real</button></span></div>` : ""}<section class="observatory${options.embedded ? " observatory-embedded" : ""}" aria-label="Model residency monitor">
       ${!options.embedded ? `<div class="observatory-tools">
         <div><span class="eyebrow">Local watch</span><strong>${demo ? "Sample workspace" : "This computer"}</strong></div>
         <div class="tool-actions">
@@ -63,7 +64,7 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
           ${selectedModel ? `<div class="evidence" aria-live="polite">
             <span class="eyebrow">Why we think this</span>
             <h3>${escapeHtml(selectedModel.runtime)} owns this load</h3>
-            <dl><div><dt>Model memory</dt><dd>${bytes(selectedModel.sizeBytes)}</dd></div><div><dt>GPU memory</dt><dd>${bytes(selectedModel.vramBytes)}</dd></div><div><dt>OS process</dt><dd>${escapeHtml(selectedModel.processName ?? "Not matched")}${selectedModel.pid ? ` · PID ${selectedModel.pid}` : ""}</dd></div></dl>
+            <dl><div><dt>Model memory</dt><dd>${bytes(selectedModel.sizeBytes)}</dd></div><div><dt>GPU memory</dt><dd>${bytes(selectedModel.vramBytes)}</dd></div><div><dt>Process RAM</dt><dd>${bytes(selectedModel.processRamBytes ?? 0)}</dd></div><div><dt>OS process</dt><dd>${escapeHtml(selectedModel.processName ?? "Not matched")}${selectedModel.pid ? ` · PID ${selectedModel.pid}` : ""}</dd></div></dl>
             <p><span class="confidence confidence-${selectedModel.confidence}">${selectedModel.confidence} attribution</span> ${escapeHtml(selectedModel.evidence)}</p>
           </div>` : ""}
         </section>
@@ -78,7 +79,7 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
   };
 
   const runScan = async () => {
-    if (busy || !options.scanner) return;
+    if (busy || !options.scanner || demo) return;
     busy = true; render();
     try {
       const next = await options.scanner();
@@ -86,7 +87,7 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
       events = [...changes, ...events].slice(0, 100);
       scan = next;
       selected = next.models[0]?.id ?? null;
-      localStorage.setItem(storageKey, JSON.stringify(events));
+      try { localStorage.setItem(storageKey, JSON.stringify(events)); } catch { /* The live view still works when storage is unavailable. */ }
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       host.dispatchEvent(new CustomEvent("dashboard-error", { detail: message }));
@@ -108,6 +109,16 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
     host.querySelectorAll<HTMLButtonElement>("[data-model]").forEach((button) => button.addEventListener("click", () => { selected = button.dataset.model ?? null; render(); }));
     host.querySelectorAll<HTMLButtonElement>('[data-action="scan"]').forEach((button) => button.addEventListener("click", runScan));
     host.querySelector<HTMLButtonElement>('[data-action="sample"]')?.addEventListener("click", () => { demo = true; scan = structuredClone(sampleScan); events = structuredClone(sampleEvents); selected = scan.models[0].id; render(); host.dispatchEvent(new CustomEvent("demo-started")); });
+    host.querySelector<HTMLButtonElement>('[data-action="reset"]')?.addEventListener("click", resetDemo);
+    host.querySelector<HTMLButtonElement>('[data-action="real"]')?.addEventListener("click", () => {
+      demo = false;
+      scan = null;
+      selected = null;
+      try { events = JSON.parse(localStorage.getItem(storageKey) || "[]") as ResidencyEvent[]; } catch { events = []; }
+      render();
+      host.dispatchEvent(new CustomEvent("demo-ended"));
+      void runScan();
+    });
     host.querySelector<HTMLButtonElement>('[data-action="copy"]')?.addEventListener("click", copyReport);
   };
 

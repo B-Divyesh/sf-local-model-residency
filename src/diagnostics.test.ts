@@ -8,6 +8,7 @@ describe("diagnostics", () => {
     const report = makeDiagnostic(sampleScan, sampleEvents);
     expect(report).toContain("Prompts and replies: not collected");
     expect(report).toContain("Ollama");
+    expect(report).toContain("process RAM 0.57 GB");
   });
   it("finds unload changes", () => {
     const next = { ...sampleScan, models: sampleScan.models.slice(1) };

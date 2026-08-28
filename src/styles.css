@@ -51,6 +51,10 @@ button { color: inherit; }
 .app-intro p { margin: 0; color: var(--slate); }
 .notice { margin-bottom: 18px; border: 1px solid color-mix(in srgb, var(--crack) 48%, var(--hairline)); border-radius: 14px; padding: 12px 16px; background: color-mix(in srgb, var(--crack) 8%, var(--clay)); }
 .notice-demo { border-color: var(--hairline); background: var(--clay); }
+.in-app-demo { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 10px; border: 1px solid var(--hairline); border-radius: 16px 11px 14px 10px; padding: 8px 12px 8px 16px; background: color-mix(in srgb, var(--glaze) 9%, var(--clay)); }
+.in-app-demo strong { font-size: .84rem; }
+.in-app-demo span { display: flex; gap: 8px; }
+.in-app-demo button { min-height: 44px; border: 0; padding: 7px 10px; color: var(--glaze-dark); background: transparent; font-weight: 800; text-decoration: underline; cursor: pointer; }
 .observatory { overflow: hidden; border: 1px solid var(--hairline); border-radius: 32px 21px 27px 18px; background: var(--clay); box-shadow: 0 24px 60px var(--shadow); }
 .observatory-tools { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 78px; padding: 14px 20px 14px 24px; border-bottom: 1px solid var(--hairline); }
 .observatory-tools strong { display: block; }
@@ -84,7 +88,7 @@ button { color: inherit; }
 .state-word span { margin-right: 4px; }
 .evidence { margin-top: 18px; border-top: 1px solid var(--hairline); padding-top: 18px; }
 .evidence h3 { margin: 4px 0 15px; font: 500 1.2rem var(--display); }
-.evidence dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 0; border-block: 1px solid var(--hairline); }
+.evidence dl { display: grid; grid-template-columns: repeat(4, 1fr); margin: 0; border-block: 1px solid var(--hairline); }
 .evidence dl div { padding: 12px 8px; }
 .evidence dl div + div { border-left: 1px solid var(--hairline); }
 .evidence dt { color: var(--slate); font-size: .73rem; }
@@ -106,6 +110,7 @@ button { color: inherit; }
 .runtime-checks ul { list-style: none; margin: 0; padding: 0; }
 .runtime-checks li { display: grid; grid-template-columns: 10px minmax(0,1fr) auto; align-items: start; gap: 10px; padding: 9px 0; }
 .runtime-checks li strong, .runtime-checks li small { display: block; }
+.runtime-checks li strong { color: var(--ink); }
 .runtime-checks li small, .runtime-checks > p { color: var(--slate); font-size: .75rem; }
 .runtime-checks li b { font-size: .72rem; text-transform: capitalize; }
 .runtime-state { width: 8px; height: 8px; margin-top: 7px; border-radius: 50%; background: var(--slate); }
@@ -119,6 +124,7 @@ button { color: inherit; }
 
 @media (prefers-color-scheme: dark) {
   :root { --ice: #17201f; --clay: #202a28; --ink: #f4f6f1; --slate: #b6c3bf; --glaze: #74cbd0; --glaze-dark: #b7f3f2; --ember: #ff9b79; --moss: #7bd59b; --crack: #ff989d; --hairline: #3c4b48; --shadow: rgba(0,0,0,.22); }
+  .observatory, .model-row, .pane-heading h2, .evidence h3, .evidence dd, .event strong, .runtime-checks h3, .runtime-checks li strong, .runtime-checks li b { color: #f4f6f1; }
   .button-primary { background: #b7f3f2; color: #102220; }
   .button-primary:hover { background: #d5ffff; }
 }
@@ -128,6 +134,9 @@ button { color: inherit; }
   .resident-pane { border-right: 0; border-bottom: 1px solid var(--hairline); }
   .observatory-tools { align-items: flex-start; flex-direction: column; }
   .tool-actions { justify-content: start; }
+  .evidence dl { grid-template-columns: repeat(2, 1fr); }
+  .evidence dl div:nth-child(3) { border-left: 0; border-top: 1px solid var(--hairline); }
+  .evidence dl div:nth-child(4) { border-top: 1px solid var(--hairline); }
 }
 @media (max-width: 520px) {
   .app-header { padding-inline: 16px; }
@@ -137,10 +146,11 @@ button { color: inherit; }
   .status-line { align-items: flex-start; flex-direction: column; padding-inline: 16px; }
   .tool-actions { width: 100%; }
   .tool-actions .button { flex: 1 1 100%; }
+  .in-app-demo { align-items: flex-start; flex-direction: column; }
   .model-row { grid-template-columns: 42px minmax(0,1fr); }
   .state-word { grid-column: 2; }
   .evidence dl { grid-template-columns: 1fr; }
-  .evidence dl div + div { border-left: 0; border-top: 1px solid var(--hairline); }
+  .evidence dl div + div, .evidence dl div:nth-child(4) { border-left: 0; border-top: 1px solid var(--hairline); }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }

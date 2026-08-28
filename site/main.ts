@@ -74,11 +74,11 @@ async function setupDownloads() {
 function bindLinks() {
   document.querySelectorAll<HTMLAnchorElement>("a[data-link]").forEach((link) => link.addEventListener("click", (event) => {
     if (link.origin !== location.origin) return;
-    event.preventDefault(); history.pushState({}, "", link.pathname + link.search + link.hash); render();
+    event.preventDefault(); history.pushState({}, "", link.pathname + link.search + link.hash); render(true);
   }));
 }
 
-function render() {
+function render(focusHeading = false) {
   const path = location.pathname.replace(/\/$/, "") || "/";
   const known = Object.hasOwn(routeMeta, path);
   app.innerHTML = path === "/" ? homePage() : path === "/demo" ? demoPage() : path === "/privacy" ? privacyPage() : path === "/terms" ? termsPage() : notFoundPage();
@@ -94,11 +94,11 @@ function render() {
   }
   requestAnimationFrame(() => {
     const h1 = document.querySelector<HTMLElement>("h1");
-    if (performance.getEntriesByType("navigation")[0] && history.state) h1?.focus({ preventScroll: true });
+    if (focusHeading) h1?.focus({ preventScroll: true });
     document.querySelector<HTMLElement>("#route-status")!.textContent = document.title;
   });
 }
 
-addEventListener("popstate", render);
+addEventListener("popstate", () => render(true));
 render();
 if ("serviceWorker" in navigator) addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => undefined));

@@ -21,5 +21,11 @@ dashboard.addEventListener("demo-started", () => {
   const notice = document.querySelector<HTMLElement>("#notice")!;
   notice.hidden = false;
   notice.classList.add("notice-demo");
-  notice.textContent = "Demo — sample data, nothing is saved. Close and reopen the app to return to your computer.";
+  notice.textContent = "The sample is open. Use Start for real when you want to scan this computer.";
+});
+dashboard.addEventListener("demo-ended", () => {
+  const notice = document.querySelector<HTMLElement>("#notice")!;
+  notice.hidden = true;
+  notice.classList.remove("notice-demo");
+  notice.textContent = "";
 });

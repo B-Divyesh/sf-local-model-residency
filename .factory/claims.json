@@ -1,0 +1,44 @@
+[
+  {
+    "id": "runtime-status",
+    "claim": "Shows runtime ownership and reported memory for resident models",
+    "where": "landing preview, desktop app, README",
+    "test": "npm test -- --grep @claim:runtime-status",
+    "sandbox": "fresh browser context at /demo with bundled sample data"
+  },
+  {
+    "id": "event-source",
+    "claim": "Names the runtime behind a recorded reload",
+    "where": "landing page, demo, README",
+    "test": "npm test -- --grep @claim:event-source",
+    "sandbox": "fresh browser context at /demo; assert the reload row names its model and Ollama"
+  },
+  {
+    "id": "prompt-free",
+    "claim": "Copies a diagnostic without prompts or replies",
+    "where": "demo, privacy page, README",
+    "test": "npm test -- --grep @claim:prompt-free",
+    "sandbox": "fresh browser context at /demo with clipboard permission; inspect copied text"
+  },
+  {
+    "id": "demo-private",
+    "claim": "Demo sample data is not saved or sent away",
+    "where": "landing first screen, demo banner, privacy page",
+    "test": "npm test -- --grep @claim:demo-private",
+    "sandbox": "fresh browser context at /demo; intercept requests and inspect demo storage keys"
+  },
+  {
+    "id": "free-no-account",
+    "claim": "The app is free and the demo needs no account",
+    "where": "landing first screen, README",
+    "test": "npm test -- --grep @claim:free-no-account",
+    "sandbox": "fresh browser context; open the sample from the landing page and assert no sign-in form"
+  },
+  {
+    "id": "installer-checksum",
+    "claim": "Installer scripts reject downloads that do not match the published SHA-256",
+    "where": "README",
+    "test": "npm test -- --grep @claim:installer-checksum",
+    "sandbox": "fresh browser context; inspect both served installer scripts for checksum comparison and failure removal"
+  }
+]

@@ -7,7 +7,12 @@ work_dir="$(mktemp -d)"
 trap 'rm -rf "$work_dir"' EXIT INT TERM
 
 case "$(uname -s)" in
-  Darwin) pattern='\.dmg$' ;;
+  Darwin)
+    case "$(uname -m)" in
+      arm64|aarch64) pattern='(aarch64|arm64).*\.dmg$' ;;
+      *) pattern='(x64|x86_64).*\.dmg$' ;;
+    esac
+    ;;
   Linux) pattern='\.(AppImage|deb)$' ;;
   *) echo "Local Model Residency supports macOS, Windows, and Linux." >&2; exit 1 ;;
 esac

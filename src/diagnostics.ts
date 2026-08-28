@@ -16,7 +16,7 @@ export function makeDiagnostic(scan: ScanResult, events: ResidencyEvent[]): stri
   ];
   if (!scan.models.length) lines.push("- None reported");
   for (const model of scan.models) {
-    lines.push(`- ${model.id} | ${model.runtime} | model ${bytes(model.sizeBytes)} | GPU ${bytes(model.vramBytes)} | process ${model.processName ?? "unknown"} ${model.pid ?? "unknown PID"} | attribution ${model.confidence}`);
+    lines.push(`- ${model.id} | ${model.runtime} | model ${bytes(model.sizeBytes)} | GPU ${bytes(model.vramBytes)} | process RAM ${bytes(model.processRamBytes ?? 0)} | process ${model.processName ?? "unknown"} ${model.pid ?? "unknown PID"} | attribution ${model.confidence}`);
   }
   lines.push("", "Runtime checks");
   for (const runtime of scan.runtimes) lines.push(`- ${runtime.name}: ${runtime.state} — ${runtime.detail}`);
