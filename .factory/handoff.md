@@ -1,5 +1,7 @@
 # Handoff — Local Model Residency v0.1.0
 
+> Verification 1 on 2026-09-05: **FAIL** — 9 findings and 11 untested public claim groups. See `.factory/verification-1.md`. Product code was not changed.
+
 ## What was built
 
 - A Tauri 2 tray app for macOS, Windows, and Linux.
@@ -75,3 +77,11 @@ Claim definitions and exact commands are in `.factory/claims.json`. Demo details
 The `v0.1.0` tag triggers `.github/workflows/release.yml`. The matrix publishes arm64 and x86_64 macOS DMGs, Windows MSI and EXE installers, Linux AppImage and DEB packages, `SHA256SUMS`, and `latest.json`.
 
 Release: `https://github.com/B-Divyesh/sf-local-model-residency/releases/tag/v0.1.0`. All six platform assets are published. The Linux DEB was downloaded from the release and matched against the published SHA-256 entry.
+
+## Independent verification 1
+
+Candidate `cc7975c8c1329f2d3fa5100862ed6008914ffb31` was verified against the live site and the published Linux AppImage. The live assets match the clean candidate build. The installer checksum, app launch, local endpoint scan, malformed-response recovery, in-app sample, and restart persistence were exercised.
+
+The release is not accepted. Required follow-up is recorded in `.factory/verification-1.md`: correct the false LM Studio GPU sample, fix macOS/iOS download selection, make the default test command reliable, repair 200% text reflow and touch targets, complete claim coverage, return real 404 status, remove metaphor copy, and add README deployment instructions.
+
+Verification commands included all six commands from `.factory/claims.json`, `npm run build`, Rust test/fmt/clippy, axe across live routes and themes, the factory URL verifier, and live Lighthouse. The exact claim commands passed. The default `npm test` failed twice because Chromium crashed in the final mobile test; a one-worker diagnostic passed 23 tests with 1 skip.
