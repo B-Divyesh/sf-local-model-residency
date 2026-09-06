@@ -5,22 +5,22 @@ const app = document.querySelector<HTMLDivElement>("#app")!;
 const repoUrl = "https://github.com/B-Divyesh/sf-local-model-residency";
 
 const header = () => `<header class="site-header"><a class="wordmark" href="/" data-link aria-label="Local Model Residency home"><span class="wordmark-mark" aria-hidden="true"></span><span>Local Model<br><b>Residency</b></span></a><nav class="site-nav" aria-label="Main navigation"><a href="/demo" data-link>Demo</a><a href="/#how">How it works</a><a href="/privacy" data-link>Privacy</a><a href="/#download" class="button button-quiet">Download</a></nav></header>`;
-const footer = () => `<footer class="site-footer"><p>Local model memory, explained in plain words.</p><nav class="footer-links" aria-label="Legal"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></nav><p>Built by Param Factory · original generated art · v0.1.0</p></footer>`;
+const footer = () => `<footer class="site-footer"><p>Check local model memory and reloads.</p><nav class="footer-links" aria-label="Legal"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></nav><p>Built by Param Factory · original generated art · v0.1.1</p></footer>`;
 
 function homePage() {
   return `${header()}<main id="main">
     <section class="hero">
       <div class="hero-copy"><span class="eyebrow">A local desktop utility</span><h1 tabindex="-1">See what keeps your models loaded</h1><p class="hero-lede">For local-model users who need to find memory use and reload churn.</p>
         <div class="hero-actions"><a class="button button-primary" href="/demo" data-link>Try it with sample data</a><small>It opens a private sample workspace. Nothing is saved.</small></div>
-        <ul class="plain-facts"><li>Reads local runtime status</li><li>Never reads prompts or replies</li><li>Free, with no account</li></ul>
+        <ul class="plain-facts"><li>Reads local runtime status</li><li>Does not send prompts or replies</li><li>Free, with no account</li></ul>
       </div>
-      <div class="hero-art"><picture><source media="(max-width: 620px)" srcset="/assets/hero-ceramics-720.webp"><img src="/assets/hero-ceramics.webp" width="1200" height="800" fetchpriority="high" alt="Three ceramic vessels rest inside ice while one small vessel sits outside." /></picture><span class="art-note">Stable models stay nested. A reload breaks the quiet.</span></div>
+      <div class="hero-art"><picture><source media="(max-width: 620px)" srcset="/assets/hero-ceramics-720.webp"><img src="/assets/hero-ceramics.webp" width="1200" height="800" fetchpriority="high" alt="Three ceramic vessels represent models held in memory, with one separate vessel representing a reload." /></picture><span class="art-note">Loaded models stay visible. Reloads are marked.</span></div>
     </section>
-    <section class="preview-section" aria-labelledby="preview-title"><div class="preview-wrap"><div class="section-heading"><div><span class="eyebrow">The product</span><h2 id="preview-title">One view for every local load</h2></div><p>See runtime ownership, GPU memory, process memory, and recent changes together.</p></div><div id="preview-dashboard"></div></div></section>
-    <section class="how" id="how" aria-labelledby="how-title"><div class="section-inner"><span class="eyebrow">How it works</span><h2 id="how-title">Follow the load, not the guess</h2><ol class="step-list"><li><h3>Open your runtimes</h3><p>Keep Ollama, LM Studio, or Jan running as usual.</p></li><li><h3>Scan local status</h3><p>The app matches reported models to runtime processes on your computer.</p></li><li><h3>Read the changes</h3><p>Loads and unloads show which runtime changed and when.</p></li></ol></div></section>
-    <section class="walkthrough" aria-labelledby="walkthrough-title"><div class="section-inner"><span class="eyebrow">Desktop walkthrough</span><h2 id="walkthrough-title">From empty view to clear evidence</h2><div class="frames"><figure class="frame"><div class="frame-shot"><img src="/assets/walkthrough-empty.webp" width="960" height="600" loading="lazy" alt="The empty desktop app before its first runtime scan." /></div><figcaption><strong>1. Start with a clean watch.</strong>No process or model appears before a scan.</figcaption></figure><figure class="frame"><div class="frame-shot"><img src="/assets/walkthrough-resident.webp" width="960" height="600" loading="lazy" alt="The desktop app showing two resident models and their memory use." /></div><figcaption><strong>2. Select a resident model.</strong>Read the runtime, memory, process, and evidence.</figcaption></figure><figure class="frame"><div class="frame-shot"><img src="/assets/walkthrough-events.webp" width="960" height="600" loading="lazy" alt="The desktop app showing reload and unload events." /></div><figcaption><strong>3. Find the reload source.</strong>The event list names the model and runtime.</figcaption></figure></div></div></section>
+    <section class="preview-section" aria-labelledby="preview-title"><div class="preview-wrap"><div class="section-heading"><div><span class="eyebrow">The product</span><h2 id="preview-title">Check current models and reloads</h2></div><p>See runtime ownership, GPU memory, process memory, and recent changes together.</p></div><div id="preview-dashboard"></div></div></section>
+    <section class="how" id="how" aria-labelledby="how-title"><div class="section-inner"><span class="eyebrow">How it works</span><h2 id="how-title">See what changed between scans</h2><ol class="step-list"><li><h3>Open your runtimes</h3><p>Keep Ollama, LM Studio, or Jan running as usual.</p></li><li><h3>Scan local status</h3><p>The app matches reported models to runtime processes on your computer.</p></li><li><h3>Read the changes</h3><p>Loads and unloads show which runtime changed and when.</p></li></ol></div></section>
+    <section class="walkthrough" aria-labelledby="walkthrough-title"><div class="section-inner"><span class="eyebrow">Desktop walkthrough</span><h2 id="walkthrough-title">How the desktop app shows a scan</h2><div class="frames"><figure class="frame"><div class="frame-shot"><img src="/assets/walkthrough-empty.webp" width="960" height="600" loading="lazy" alt="The empty desktop app before its first runtime scan." /></div><figcaption><strong>1. Start with a clean watch.</strong>No process or model appears before a scan.</figcaption></figure><figure class="frame"><div class="frame-shot"><img src="/assets/walkthrough-resident.webp" width="960" height="600" loading="lazy" alt="The desktop app showing two resident models and their memory use." /></div><figcaption><strong>2. Select a resident model.</strong>Read the runtime, memory, process, and evidence.</figcaption></figure><figure class="frame"><div class="frame-shot"><img src="/assets/walkthrough-events.webp" width="960" height="600" loading="lazy" alt="The desktop app showing reload and unload events." /></div><figcaption><strong>3. Find the reload source.</strong>The event list names the model and runtime.</figcaption></figure></div></div></section>
     <section class="boundaries" aria-labelledby="boundaries-title"><div class="section-inner boundary-grid"><div><span class="eyebrow">Clear limits</span><h2 id="boundaries-title">It watches memory, not conversations</h2></div><ul class="boundary-list"><li><div><strong>No prompt or reply access</strong><p>The app asks only local status endpoints and OS process lists.</p></div></li><li><div><strong>No model downloads</strong><p>Use your current model runner to add or remove models.</p></div></li><li><div><strong>No hidden certainty</strong><p>Shared memory and missing client ownership are marked as partial.</p></div></li></ul></div></section>
-    <section class="download-section" id="download" aria-labelledby="download-title"><div class="download-panel"><div><span class="eyebrow">Free desktop app</span><h2 id="download-title">Watch your own computer</h2><p>Choose your platform. Builds are unsigned until the release certificates are added.</p></div><div class="download-actions"><a id="download-button" class="button button-primary" href="${repoUrl}/releases">View desktop releases</a><span id="download-status" class="download-status">Checking published builds…</span></div></div></section>
+    <section class="download-section" id="download" aria-labelledby="download-title"><div class="download-panel"><div><span class="eyebrow">Free desktop app</span><h2 id="download-title">Download the desktop app</h2><p>Choose your platform. Builds are unsigned until the release certificates are added.</p></div><div class="download-actions"><div id="download-options"><a id="download-button" class="button button-primary" href="${repoUrl}/releases">View desktop releases</a></div><span id="download-status" class="download-status">Checking published builds…</span></div></div></section>
   </main>${footer()}`;
 }
 
@@ -29,7 +29,7 @@ function demoPage() {
 }
 
 function privacyPage() {
-  return `${header()}<main id="main" class="legal"><span class="eyebrow">Privacy</span><h1 tabindex="-1">Your model activity stays on your computer</h1><p>Local Model Residency reads runtime status from loopback addresses. It reads matching process names, IDs, and memory totals from your operating system.</p><h2>What the app does not read</h2><p>The app does not read prompts, replies, model files, chat history, or account data. It has no analytics or telemetry.</p><h2>What the app stores</h2><p>The desktop app stores up to 100 residency events on your computer. A copied diagnostic leaves the app only when you paste or share it.</p><p>The website stores release metadata for up to one hour. Demo data stays in memory and disappears when you leave the page.</p><h2>Network access</h2><p>The desktop app contacts supported runtimes only on your loopback network. The download page asks the public GitHub API for release files. No other service receives product activity.</p><p>Questions: <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p></main>${footer()}`;
+  return `${header()}<main id="main" class="legal"><span class="eyebrow">Privacy</span><h1 tabindex="-1">Your model activity stays on your computer</h1><p>Local Model Residency reads runtime status from loopback addresses. It reads matching process names, IDs, and memory totals from your operating system.</p><h2>What the scanner requests</h2><p>The scanner sends status requests only to supported loopback runtimes. Those requests do not carry prompts or replies.</p><h2>What the app stores</h2><p>The desktop app keeps up to 100 residency events on your computer. A diagnostic reaches the clipboard only after you choose Copy diagnostic.</p><p>The website stores release metadata for up to one hour. Demo data stays in memory and disappears when you leave the page.</p><h2>Network access</h2><p>The desktop app contacts supported runtimes only on your loopback network. The download page asks the public GitHub API for release files.</p><p>Questions: <a href="mailto:privacy@sociobot.in">privacy@sociobot.in</a>.</p></main>${footer()}`;
 }
 
 function termsPage() {
@@ -37,7 +37,7 @@ function termsPage() {
 }
 
 function notFoundPage() {
-  return `${header()}<main id="main" class="not-found"><span class="not-found-mark" aria-hidden="true"></span><span class="eyebrow">404 · Nothing resident here</span><h1 tabindex="-1">This page has unloaded</h1><p>The address does not match a page in this app.</p><p><a class="button button-primary" href="/" data-link>Return home</a></p></main>${footer()}`;
+  return `${header()}<main id="main" class="not-found"><span class="not-found-mark" aria-hidden="true"></span><span class="eyebrow">Page not found</span><h1 tabindex="-1">This page is not available</h1><p>The address does not match a page in this site.</p><p><a class="button button-primary" href="/" data-link>Return home</a></p></main>${footer()}`;
 }
 
 const routeMeta: Record<string, [string, string]> = {
@@ -47,15 +47,36 @@ const routeMeta: Record<string, [string, string]> = {
   "/terms": ["Terms — Local Model Residency", "Terms for the Local Model Residency desktop app."]
 };
 
+type ReleaseAsset = { name: string; browser_download_url: string };
+type Release = { savedAt: number; tag_name: string; html_url: string; assets: ReleaseAsset[] };
+
+function detectDownloadPlatform(userAgent = navigator.userAgent): "macOS" | "Windows" | "Linux" | "mobile" {
+  if (/(iPhone|iPad|iPod|Android)/i.test(userAgent)) return "mobile";
+  if (/Macintosh|Mac OS X/i.test(userAgent)) return "macOS";
+  if (/Windows/i.test(userAgent)) return "Windows";
+  return "Linux";
+}
+
+function releaseAsset(release: Release, matcher: RegExp) {
+  return release.assets.find((item) => matcher.test(item.name));
+}
+
 async function setupDownloads() {
   const button = document.querySelector<HTMLAnchorElement>("#download-button");
   const status = document.querySelector<HTMLElement>("#download-status");
-  if (!button || !status) return;
-  const os = /Mac/i.test(navigator.userAgent) ? "macOS" : /Win/i.test(navigator.userAgent) ? "Windows" : "Linux";
-  const matcher = os === "macOS" ? /\.(dmg|app\.tar\.gz)$/i : os === "Windows" ? /\.(msi|exe)$/i : /\.(AppImage|deb)$/i;
+  const options = document.querySelector<HTMLElement>("#download-options");
+  if (!button || !status || !options) return;
+  const platform = detectDownloadPlatform();
+  if (platform === "mobile") {
+    button.href = `${repoUrl}/releases`;
+    button.textContent = "View desktop releases";
+    status.textContent = "Use a macOS, Windows, or Linux computer to install the app.";
+    return;
+  }
+  const matcher = platform === "Windows" ? /\.(msi|exe)$/i : platform === "Linux" ? /\.(AppImage|deb)$/i : /\.(dmg|app\.tar\.gz)$/i;
   try {
     const cached = localStorage.getItem("lmr:release:v1");
-    let release: { savedAt: number; tag_name: string; html_url: string; assets: { name: string; browser_download_url: string }[] } | null = cached ? JSON.parse(cached) : null;
+    let release: Release | null = cached ? JSON.parse(cached) : null;
     if (!release || Date.now() - release.savedAt > 3_600_000) {
       const response = await fetch("https://api.github.com/repos/B-Divyesh/sf-local-model-residency/releases?per_page=1", { headers: { Accept: "application/vnd.github+json" } });
       if (!response.ok) throw new Error("Release check unavailable");
@@ -63,11 +84,19 @@ async function setupDownloads() {
       if (!Array.isArray(data) || !data[0]) throw new Error("No release");
       release = { ...data[0], savedAt: Date.now() }; localStorage.setItem("lmr:release:v1", JSON.stringify(release));
     }
-    const asset = release.assets.find((item) => matcher.test(item.name));
+    if (platform === "macOS") {
+      const arm = releaseAsset(release, /(aarch64|arm64).*\.(dmg|app\.tar\.gz)$/i);
+      const intel = releaseAsset(release, /(x86_64|x64).*\.(dmg|app\.tar\.gz)$/i);
+      if (!arm || !intel) throw new Error("macOS builds pending");
+      options.innerHTML = `<span class="download-choice-label">Choose your Mac:</span><div class="download-choices"><a class="button button-primary" href="${arm.browser_download_url}">Apple silicon</a><a class="button button-quiet" href="${intel.browser_download_url}">Intel Mac</a></div>`;
+      status.textContent = `${release.tag_name} · choose the build that matches your Mac.`;
+      return;
+    }
+    const asset = releaseAsset(release, matcher);
     if (!asset) throw new Error("Platform build pending");
-    button.href = asset.browser_download_url; button.textContent = `Download for ${os}`; status.textContent = `${release.tag_name} · ${asset.name}`;
+    button.href = asset.browser_download_url; button.textContent = `Download for ${platform}`; status.textContent = `${release.tag_name} · ${asset.name}`;
   } catch {
-    button.href = `${repoUrl}/releases`; button.textContent = "View desktop releases"; status.textContent = `The ${os} download is being published.`;
+    button.href = `${repoUrl}/releases`; button.textContent = "View desktop releases"; status.textContent = `The ${platform} download is being published.`;
   }
 }
 

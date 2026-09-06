@@ -4,7 +4,7 @@
 .site-shell { min-height: 100vh; }
 .site-header { position: relative; z-index: 5; height: 80px; display: flex; align-items: center; justify-content: space-between; width: min(1180px, calc(100% - 40px)); margin: auto; }
 .site-nav { display: flex; align-items: center; gap: 24px; }
-.site-nav a { color: var(--ink); font-size: .9rem; font-weight: 700; text-decoration: none; }
+.site-nav a { min-height: 44px; display: inline-flex; align-items: center; color: var(--ink); font-size: .9rem; font-weight: 700; text-decoration: none; }
 .site-nav a:hover { text-decoration: underline; }
 .hero { width: min(1180px, calc(100% - 40px)); min-height: 650px; display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: 48px; margin: 0 auto; padding: 48px 0 72px; }
 .hero-copy { position: relative; z-index: 2; }
@@ -51,13 +51,17 @@
 .download-panel p { max-width: 48ch; color: var(--slate); }
 .download-actions { display: grid; justify-items: stretch; gap: 8px; min-width: 280px; }
 .download-actions a { text-align: center; }
+.download-choice-label { display: block; margin-bottom: 7px; color: var(--slate); font-size: .84rem; font-weight: 700; text-align: center; }
+.download-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.download-choices a { display: inline-flex; align-items: center; justify-content: center; }
 .download-status { color: var(--slate); font-size: .8rem; text-align: center; }
 .site-footer { display: grid; grid-template-columns: 1fr auto auto; gap: 28px; width: min(1180px, calc(100% - 40px)); margin: auto; padding: 34px 0 45px; color: var(--slate); font-size: .82rem; }
 .site-footer p { margin: 0; }
-.footer-links { display: flex; gap: 18px; }
+.footer-links { display: flex; gap: 8px; }
+.footer-links a { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; justify-content: center; }
 .demo-banner { position: sticky; z-index: 9; top: 0; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px; min-height: 52px; padding: 6px 18px; background: #d6e6e3; color: #172525; border-bottom: 1px solid #b4c7c2; }
 .demo-banner strong { font-size: .87rem; }
-.demo-banner button, .demo-banner a { min-height: 38px; padding: 6px 11px; border: 0; background: transparent; color: #0d5057; font-weight: 800; text-decoration: underline; cursor: pointer; }
+.demo-banner button, .demo-banner a { min-height: 44px; display: inline-flex; align-items: center; padding: 6px 11px; border: 0; background: transparent; color: #0d5057; font-weight: 800; text-decoration: underline; cursor: pointer; }
 .demo-page { width: min(1240px, calc(100% - 28px)); margin: auto; padding: 42px 0 80px; }
 .demo-intro { display: flex; align-items: end; justify-content: space-between; gap: 30px; margin-bottom: 34px; }
 .demo-intro h1 { max-width: 13ch; font-size: clamp(2.5rem, 5vw, 4.5rem); }
@@ -94,8 +98,12 @@
   .download-actions { justify-self: stretch; }
 }
 @media (max-width: 560px) {
-  .site-header { width: calc(100% - 28px); }
+  .site-header { width: calc(100% - 28px); height: auto; min-height: 70px; padding-block: 8px; gap: 4px; }
   .site-nav a:not(:last-child) { display: none; }
+  .site-nav { min-width: 0; gap: 4px; }
+  .site-nav a:last-child { padding-inline: 10px; white-space: nowrap; }
+  .site-header .wordmark { gap: 6px; font-size: .62rem; }
+  .site-header .wordmark-mark { width: 34px; height: 34px; }
   .hero { width: calc(100% - 28px); gap: 30px; padding-top: 18px; }
   .hero-art { min-height: 300px; border-radius: 37% 18px 32% 13px; }
   .hero h1 { font-size: 3.15rem; }

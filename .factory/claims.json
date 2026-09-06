@@ -1,44 +1,100 @@
 [
   {
+    "id": "native-runtimes",
+    "claim": "The desktop scanner reads Ollama, LM Studio, and Jan status and matches runtime processes.",
+    "where": "landing page, desktop app, README",
+    "test": "cargo test --manifest-path src-tauri/Cargo.toml claim_native_runtime_scan_queries_status_endpoints_and_processes",
+    "sandbox": "three local fixture servers return documented-style status responses and fixture processes supply RAM, names, and PIDs"
+  },
+  {
+    "id": "local-only-network",
+    "claim": "Runtime scans contact only the configured local runtime endpoints.",
+    "where": "privacy page, README",
+    "test": "cargo test --manifest-path src-tauri/Cargo.toml claim_native_runtime_scan_queries_status_endpoints_and_processes",
+    "sandbox": "record all requests during a fixture scan and assert only the three local status paths are called"
+  },
+  {
     "id": "runtime-status",
-    "claim": "Shows runtime ownership and reported memory for resident models",
+    "claim": "Shows runtime ownership and reported memory for resident models.",
     "where": "landing preview, desktop app, README",
     "test": "npm test -- --grep @claim:runtime-status",
     "sandbox": "fresh browser context at /demo with bundled sample data"
   },
   {
+    "id": "partial-attribution",
+    "claim": "Missing GPU or ownership evidence is marked as partial and not reported as a value.",
+    "where": "demo, desktop app, README",
+    "test": "npm test -- --grep @claim:partial-attribution",
+    "sandbox": "fresh browser context at /demo; select the LM Studio sample with no GPU value"
+  },
+  {
     "id": "event-source",
-    "claim": "Names the runtime behind a recorded reload",
+    "claim": "Names the runtime behind a recorded reload.",
     "where": "landing page, demo, README",
     "test": "npm test -- --grep @claim:event-source",
     "sandbox": "fresh browser context at /demo; assert the reload row names its model and Ollama"
   },
   {
+    "id": "event-transitions",
+    "claim": "Detects loads, unloads, and reloads between scans.",
+    "where": "landing page, desktop app, README",
+    "test": "npm run test:unit -- -t @claim:event-transitions",
+    "sandbox": "two realistic scan results remove and then restore an Ollama model"
+  },
+  {
     "id": "prompt-free",
-    "claim": "Copies a diagnostic without prompts or replies",
+    "claim": "Copies a diagnostic without prompts or replies.",
     "where": "demo, privacy page, README",
     "test": "npm test -- --grep @claim:prompt-free",
     "sandbox": "fresh browser context at /demo with clipboard permission; inspect copied text"
   },
   {
+    "id": "diagnostic-copy",
+    "claim": "A diagnostic reaches the clipboard only after you choose Copy diagnostic.",
+    "where": "privacy page, README",
+    "test": "npm test -- --grep @claim:diagnostic-copy",
+    "sandbox": "fresh browser context at /demo with a sentinel clipboard value before and after non-copy actions"
+  },
+  {
+    "id": "local-history",
+    "claim": "Keeps the latest 100 residency events on your computer.",
+    "where": "privacy page, README",
+    "test": "npm run test:unit -- -t @claim:local-history",
+    "sandbox": "a history at capacity receives one newer event and retains 100 events including the newest"
+  },
+  {
+    "id": "no-model-control",
+    "claim": "Does not offer controls to serve, download, stop, or delete models.",
+    "where": "landing page, terms page, README",
+    "test": "npm test -- --grep @claim:no-model-control",
+    "sandbox": "fresh browser context at /demo; inspect all diagnostic controls"
+  },
+  {
     "id": "demo-private",
-    "claim": "Demo sample data is not saved or sent away",
+    "claim": "Demo sample data is not saved or sent away.",
     "where": "landing first screen, demo banner, privacy page",
     "test": "npm test -- --grep @claim:demo-private",
-    "sandbox": "fresh browser context at /demo; intercept requests and inspect demo storage keys"
+    "sandbox": "fresh browser context at /demo; record requests and preserve a pre-existing real-event storage value"
   },
   {
     "id": "free-no-account",
-    "claim": "The app is free and the demo needs no account",
+    "claim": "The app is free and the demo needs no account.",
     "where": "landing first screen, README",
     "test": "npm test -- --grep @claim:free-no-account",
-    "sandbox": "fresh browser context; open the sample from the landing page and assert no sign-in form"
+    "sandbox": "fresh browser context; open the sample from the landing page and check for sign-in and payment actions"
+  },
+  {
+    "id": "platform-downloads",
+    "claim": "Mac visitors choose Apple silicon or Intel builds, while phone visitors are not offered a desktop installer.",
+    "where": "download section",
+    "test": "npm test -- --grep @claim:platform-downloads",
+    "sandbox": "fresh browser context with a mocked published release and a macOS user agent"
   },
   {
     "id": "installer-checksum",
-    "claim": "Installer scripts reject downloads that do not match the published SHA-256",
+    "claim": "Installer commands reject downloads that do not match the published SHA-256.",
     "where": "README",
-    "test": "npm test -- --grep @claim:installer-checksum",
-    "sandbox": "fresh browser context; inspect both served installer scripts for checksum comparison and failure removal"
+    "test": "npm run test:unit -- -t @claim:installer-checksum",
+    "sandbox": "a temporary fake release returns a bad checksum and the real installer must fail without saving the file"
   }
 ]

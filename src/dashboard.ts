@@ -9,10 +9,16 @@ type DashboardOptions = {
   scanner?: () => Promise<ScanResult>;
 };
 
+export const residencyEventStorageKey = "lmr:residency-events:v1";
+
+export function retainRecentEvents(history: ResidencyEvent[], changes: ResidencyEvent[]): ResidencyEvent[] {
+  return [...changes, ...history].slice(0, 100);
+}
+
 const escapeHtml = (value: string) => value.replace(/[&<>"]/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[char]!);
 
 function modelTemplate(model: ScanResult["models"][number], active: boolean): string {
-  const percent = Math.min(100, Math.max(10, Math.round(model.vramBytes / 8_589_934_592 * 10) * 10));
+  const percent = model.vramBytes ? Math.min(100, Math.max(10, Math.round(model.vramBytes / 8_589_934_592 * 10) * 10)) : 0;
   return `<button class="model-row${active ? " is-active" : ""}" data-model="${escapeHtml(model.id)}" aria-pressed="${active}">
     <span class="model-glyph fill-${percent}" aria-hidden="true"><i></i></span>
     <span class="model-name"><strong>${escapeHtml(model.id)}</strong><small>${escapeHtml(model.runtime)} · ${bytes(model.vramBytes)} GPU</small></span>
@@ -35,7 +41,7 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
   let events: ResidencyEvent[] = demo ? structuredClone(sampleEvents) : [];
   let selected = scan?.models[0]?.id ?? null;
   let busy = false;
-  const storageKey = "lmr:residency-events:v1";
+  const storageKey = residencyEventStorageKey;
 
   if (!demo && !options.embedded) {
     try { events = JSON.parse(localStorage.getItem(storageKey) || "[]") as ResidencyEvent[]; } catch { events = []; }
@@ -84,7 +90,7 @@ export function mountDashboard(host: HTMLElement, options: DashboardOptions = {}
     try {
       const next = await options.scanner();
       const changes = deriveEvents(scan, next, events);
-      events = [...changes, ...events].slice(0, 100);
+      events = retainRecentEvents(events, changes);
       scan = next;
       selected = next.models[0]?.id ?? null;
       try { localStorage.setItem(storageKey, JSON.stringify(events)); } catch { /* The live view still works when storage is unavailable. */ }

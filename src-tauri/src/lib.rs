@@ -64,6 +64,22 @@ struct ProcessMatch {
     memory: u64,
 }
 
+struct RuntimeEndpoints {
+    ollama: String,
+    lm_studio: String,
+    jan: String,
+}
+
+impl Default for RuntimeEndpoints {
+    fn default() -> Self {
+        Self {
+            ollama: "http://127.0.0.1:11434/api/ps".into(),
+            lm_studio: "http://127.0.0.1:1234/api/v1/models".into(),
+            jan: "http://127.0.0.1:1337/v1/models".into(),
+        }
+    }
+}
+
 fn process_for(system: &System, terms: &[&str]) -> Option<ProcessMatch> {
     system
         .processes()
@@ -143,23 +159,18 @@ fn lm_studio_models(
     }).collect())
 }
 
-#[tauri::command]
-async fn scan_local_runtimes() -> Result<ScanResult, String> {
-    let client = reqwest::Client::builder()
-        .timeout(Duration::from_millis(900))
-        .no_proxy()
-        .build()
-        .map_err(|error| error.to_string())?;
-    let mut system = System::new_all();
-    system.refresh_all();
-    let ollama_process = process_for(&system, &["ollama"]);
-    let lm_process = process_for(&system, &["lm studio", "lm-studio", "lms"]);
+async fn scan_runtimes(
+    client: &reqwest::Client,
+    endpoints: &RuntimeEndpoints,
+    ollama_process: Option<&ProcessMatch>,
+    lm_process: Option<&ProcessMatch>,
+) -> ScanResult {
     let mut models = Vec::new();
     let mut runtimes = Vec::new();
 
-    match client.get("http://127.0.0.1:11434/api/ps").send().await {
+    match client.get(&endpoints.ollama).send().await {
         Ok(response) if response.status().is_success() => match response.text().await {
-            Ok(body) => match ollama_models(&body, ollama_process.as_ref()) {
+            Ok(body) => match ollama_models(&body, ollama_process) {
                 Ok(found) => {
                     let count = found.len();
                     models.extend(found);
@@ -192,13 +203,9 @@ async fn scan_local_runtimes() -> Result<ScanResult, String> {
         }),
     }
 
-    match client
-        .get("http://127.0.0.1:1234/api/v1/models")
-        .send()
-        .await
-    {
+    match client.get(&endpoints.lm_studio).send().await {
         Ok(response) if response.status().is_success() => match response.text().await {
-            Ok(body) => match lm_studio_models(&body, lm_process.as_ref()) {
+            Ok(body) => match lm_studio_models(&body, lm_process) {
                 Ok(found) => {
                     let count = found.len();
                     models.extend(found);
@@ -231,7 +238,7 @@ async fn scan_local_runtimes() -> Result<ScanResult, String> {
         }),
     }
 
-    let jan = client.get("http://127.0.0.1:1337/v1/models").send().await;
+    let jan = client.get(&endpoints.jan).send().await;
     runtimes.push(match jan {
         Ok(response) if response.status().is_success() => RuntimeRecord {
             name: "Jan".into(),
@@ -247,11 +254,31 @@ async fn scan_local_runtimes() -> Result<ScanResult, String> {
         },
     });
 
-    Ok(ScanResult {
+    ScanResult {
         scanned_at: Utc::now().to_rfc3339(),
         models,
         runtimes,
-    })
+    }
+}
+
+#[tauri::command]
+async fn scan_local_runtimes() -> Result<ScanResult, String> {
+    let client = reqwest::Client::builder()
+        .timeout(Duration::from_millis(900))
+        .no_proxy()
+        .build()
+        .map_err(|error| error.to_string())?;
+    let mut system = System::new_all();
+    system.refresh_all();
+    let ollama_process = process_for(&system, &["ollama"]);
+    let lm_process = process_for(&system, &["lm studio", "lm-studio", "lms"]);
+    Ok(scan_runtimes(
+        &client,
+        &RuntimeEndpoints::default(),
+        ollama_process.as_ref(),
+        lm_process.as_ref(),
+    )
+    .await)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -308,6 +335,59 @@ pub fn run() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::{
+        io::{Read, Write},
+        net::TcpListener,
+        sync::{Arc, Mutex},
+        thread,
+    };
+
+    fn runtime_fixture_server() -> (
+        RuntimeEndpoints,
+        Arc<Mutex<Vec<String>>>,
+        thread::JoinHandle<()>,
+    ) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let requests = Arc::new(Mutex::new(Vec::new()));
+        let observed = Arc::clone(&requests);
+        let handle = thread::spawn(move || {
+            for stream in listener.incoming().take(3) {
+                let mut stream = stream.unwrap();
+                let mut buffer = [0; 4096];
+                let read = stream.read(&mut buffer).unwrap();
+                let request = String::from_utf8_lossy(&buffer[..read]);
+                let path = request.split_whitespace().nth(1).unwrap().to_string();
+                observed.lock().unwrap().push(path.clone());
+                let body = match path.as_str() {
+                    "/api/ps" => {
+                        r#"{"models":[{"name":"llama3.2:8b","size":5231411712,"size_vram":4821114880}]}"#
+                    }
+                    "/api/v1/models" => {
+                        r#"{"models":[{"id":"qwen2.5-coder-7b","size_bytes":4684382208,"loaded_instances":[{"id":"one"}]}]}"#
+                    }
+                    "/v1/models" => r#"{"data":[]}"#,
+                    _ => r#"{}"#,
+                };
+                write!(
+                    stream,
+                    "HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+                    body.len(),
+                    body
+                )
+                .unwrap();
+            }
+        });
+        (
+            RuntimeEndpoints {
+                ollama: format!("http://{address}/api/ps"),
+                lm_studio: format!("http://{address}/api/v1/models"),
+                jan: format!("http://{address}/v1/models"),
+            },
+            requests,
+            handle,
+        )
+    }
 
     #[test]
     fn parses_ollama_residency_fields() {
@@ -335,5 +415,41 @@ mod tests {
         assert_eq!(models.len(), 1);
         assert_eq!(models[0].id, "loaded");
         assert_eq!(models[0].confidence, "partial");
+    }
+
+    /// @claim:native-runtimes @claim:local-only-network
+    #[test]
+    fn claim_native_runtime_scan_queries_status_endpoints_and_processes() {
+        let (endpoints, requests, server) = runtime_fixture_server();
+        let client = reqwest::Client::builder().no_proxy().build().unwrap();
+        let ollama = ProcessMatch {
+            name: "ollama".into(),
+            pid: 4812,
+            memory: 612_368_384,
+        };
+        let lm_studio = ProcessMatch {
+            name: "LM Studio".into(),
+            pid: 7731,
+            memory: 1_284_177_920,
+        };
+        let scan = tauri::async_runtime::block_on(scan_runtimes(
+            &client,
+            &endpoints,
+            Some(&ollama),
+            Some(&lm_studio),
+        ));
+        server.join().unwrap();
+
+        assert_eq!(
+            requests.lock().unwrap().as_slice(),
+            ["/api/ps", "/api/v1/models", "/v1/models"]
+        );
+        assert_eq!(scan.models.len(), 2);
+        assert_eq!(scan.models[0].process_ram_bytes, Some(612_368_384));
+        assert_eq!(scan.models[0].confidence, "confirmed");
+        assert_eq!(scan.models[1].process_ram_bytes, Some(1_284_177_920));
+        assert_eq!(scan.models[1].vram_bytes, 0);
+        assert_eq!(scan.models[1].confidence, "partial");
+        assert_eq!(scan.runtimes[2].state, "limited");
     }
 }

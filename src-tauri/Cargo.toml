@@ -1,6 +1,6 @@
 [package]
 name = "local-model-residency"
-version = "0.1.0"
+version = "0.1.1"
 description = "See which local runtime holds each model and when it reloads"
 authors = ["Param Factory"]
 license = "MIT"

@@ -4,7 +4,7 @@ import type { ScanResult } from "./types";
 
 const app = document.querySelector<HTMLDivElement>("#app")!;
 app.innerHTML = `<header class="app-header"><a class="wordmark" href="#main" aria-label="Local Model Residency home"><span class="wordmark-mark" aria-hidden="true"></span><span>Local Model<br><b>Residency</b></span></a><span class="local-badge">Local only</span></header>
-<main id="main" class="desktop-main"><div class="app-intro"><div><span class="eyebrow">Memory observatory</span><h1>See what keeps your models loaded</h1><p>For local-model users who need to find memory use and reload churn.</p></div></div><div id="notice" class="notice" hidden role="alert"></div><div id="dashboard"></div></main>`;
+<main id="main" class="desktop-main"><div class="app-intro"><div><span class="eyebrow">Local status</span><h1>See what keeps your models loaded</h1><p>For local-model users who need to find memory use and reload churn.</p></div></div><div id="notice" class="notice" hidden role="alert"></div><div id="dashboard"></div></main>`;
 
 const scanner = async (): Promise<ScanResult> => {
   const { invoke } = await import("@tauri-apps/api/core");

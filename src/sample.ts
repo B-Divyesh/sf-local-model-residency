@@ -19,13 +19,13 @@ export const sampleScan: ScanResult = {
       id: "qwen2.5-coder-7b-instruct",
       runtime: "LM Studio",
       sizeBytes: 4_684_382_208,
-      vramBytes: 4_102_995_968,
+      vramBytes: 0,
       expiresAt: null,
       processName: "LM Studio",
       pid: 7731,
       processRamBytes: 1_284_177_920,
       confidence: "partial",
-      evidence: "Listed as loaded by LM Studio. Shared memory can make the process total larger."
+      evidence: "Listed as loaded by LM Studio. Per-model GPU memory was not reported."
     }
   ],
   runtimes: [

@@ -39,7 +39,7 @@ button { color: inherit; }
 .button-quiet:hover { background: rgba(23,107,114,.08); border-color: var(--glaze); }
 .button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
 .text-button { min-height: 44px; border: 0; padding: 8px 0; color: var(--glaze-dark); background: none; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; font-weight: 750; }
-.wordmark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-size: .81rem; line-height: 1.05; letter-spacing: .03em; text-decoration: none; text-transform: uppercase; }
+.wordmark { min-width: 44px; min-height: 44px; display: inline-flex; align-items: center; gap: 10px; color: var(--ink); font-size: .81rem; line-height: 1.05; letter-spacing: .03em; text-decoration: none; text-transform: uppercase; }
 .wordmark-mark { width: 37px; height: 37px; border: 2px solid var(--glaze); border-radius: 50% 50% 44% 56%; box-shadow: inset 0 -8px 0 rgba(23,107,114,.18); position: relative; }
 .wordmark-mark::after { content: ""; position: absolute; width: 8px; height: 8px; border-radius: 50%; background: var(--ember); right: -5px; bottom: 0; }
 .app-header { height: 72px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; border-bottom: 1px solid var(--hairline); background: color-mix(in srgb, var(--clay) 90%, transparent); }
