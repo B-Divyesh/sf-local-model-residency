@@ -5,7 +5,7 @@ const app = document.querySelector<HTMLDivElement>("#app")!;
 const repoUrl = "https://github.com/B-Divyesh/sf-local-model-residency";
 
 const header = () => `<header class="site-header"><a class="wordmark" href="/" data-link aria-label="Local Model Residency home"><span class="wordmark-mark" aria-hidden="true"></span><span>Local Model<br><b>Residency</b></span></a><nav class="site-nav" aria-label="Main navigation"><a href="/demo" data-link>Demo</a><a href="/#how">How it works</a><a href="/privacy" data-link>Privacy</a><a href="/#download" class="button button-quiet">Download</a></nav></header>`;
-const footer = () => `<footer class="site-footer"><p>Check local model memory and reloads.</p><nav class="footer-links" aria-label="Legal"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></nav><p>Built by Param Factory · original generated art · v0.1.1</p></footer>`;
+const footer = () => `<footer class="site-footer"><p>Check local model memory and reloads.</p><nav class="footer-links" aria-label="Legal"><a href="/privacy" data-link>Privacy</a><a href="/terms" data-link>Terms</a></nav><p>Built by Param Factory · original generated art · v0.1.2</p></footer>`;
 
 function homePage() {
   return `${header()}<main id="main">

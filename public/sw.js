@@ -1,4 +1,4 @@
-const cacheName = "local-model-residency-v0.1.1";
+const cacheName = "local-model-residency-v0.1.2";
 const shell = [
   "/",
   "/demo",
