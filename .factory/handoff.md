@@ -1,10 +1,27 @@
-# Handoff — Local Model Residency v0.1.2
+# Handoff — Local Model Residency verification 2
+
+Verification 2 verdict: **FAIL**. The live product and released AppImage work, but one moderate claims-coverage finding remains. See `.factory/verification-2.md`.
+
+- Finding count: 1
+- Untested public claim count: 8
+- Implementation candidate: `39e2d55000bf6277d0fc609f9485c08b94c175fe`
+- Documentation reviewed before this report: `b3b35a4caaf7447428b4ef5174e37d30f8b7fecc`
+
+## Verification 2 result
+
+All 14 commands declared in `.factory/claims.json` pass, as do `npm test`, `npm run test:all`, the production build, Rust formatting, and Clippy. Live desktop and phone flows, accessibility, responsive behavior, routing, offline demo recovery, release downloads, checksums, installer behavior, and the released AppImage were independently exercised.
+
+The remaining finding is contractual: four declared claim tests do not cover every promised outcome, and four public privacy statements are not listed with complete outcome tests. Product behavior observed during manual checks was correct. Add the missing tagged tests or narrow the public wording before requesting another PASS verification.
+
+No product code was changed in verification 2.
+
+## Builder handoff for v0.1.2
 
 Implementation candidate: `39e2d55000bf6277d0fc609f9485c08b94c175fe`.
 
 ## What changed
 
-All findings from verification 1 are repaired in the shipped candidate.
+The shipped candidate addressed the nine original findings. Verification 2 confirmed the runtime repairs but found that the claims coverage is still incomplete.
 
 | Finding | Current result |
 | --- | --- |
@@ -13,7 +30,7 @@ All findings from verification 1 are repaired in the shipped candidate.
 | F003 — default tests | Playwright runs in one worker. `npm test` and the full test command now finish reliably. |
 | F004 — 200% reflow | The narrow header, download choices, and dashboard controls wrap without horizontal page overflow. |
 | F005 — touch targets | Navigation, banner, footer, and controls meet the 44 px target. |
-| F006 — claims | There are 14 tested claims, including native endpoint parsing, event changes, privacy, demo isolation, installers, accessibility, and release selection. |
+| F006 — claims | The manifest grew to 14 passing commands, but V2-F001 found four incomplete tests and four unlisted public privacy claims. |
 | F007 — missing route status | Known client routes are rewritten explicitly; other paths return the styled `404.html` with HTTP 404. |
 | F008 — unclear copy | The landing page, demo, errors, and 404 use direct task-focused wording. The copy audit has no flagged sentences. |
 | F009 — deployment docs | README now documents static-site build and factory deployment, plus Linux desktop prerequisites. |
