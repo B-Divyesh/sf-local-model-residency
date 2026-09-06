@@ -1,87 +1,73 @@
-# Handoff — Local Model Residency v0.1.0
+# Handoff — Local Model Residency v0.1.2
 
-> Verification 1 on 2026-09-05: **FAIL** — 9 findings and 11 untested public claim groups. See `.factory/verification-1.md`. Product code was not changed.
+Implementation candidate: `39e2d55000bf6277d0fc609f9485c08b94c175fe`.
 
-## What was built
+## What changed
 
-- A Tauri 2 tray app for macOS, Windows, and Linux.
-- Native scans for Ollama `/api/ps`, LM Studio `/api/v1/models`, and Jan `/v1/models` on loopback addresses.
-- Runtime-to-process matching with model memory, GPU memory, process RAM, PID, and explicit attribution confidence.
-- A 12-second local watch that records load, unload, and reload changes. Event history is capped at 100 local items.
-- A prompt-free copied diagnostic with runtime status and recent residency events.
-- Empty, partial-attribution, unavailable-runtime, scan-error, and copy-confirmation states.
-- An isolated in-memory sample project with reset and exit controls. Sample mode does not scan or write real event history.
-- A responsive static product site with `/demo`, `/privacy`, `/terms`, and a styled 404 route.
-- OS-aware GitHub release downloads, checksum-checking installer scripts, a service worker, metadata, security headers, and release automation.
-- Original glacial ceramic artwork generated for this product. Prompt and provenance live in `.factory/design.md` and `assets/src/`.
+All findings from verification 1 are repaired in the shipped candidate.
 
-## How to run
+| Finding | Current result |
+| --- | --- |
+| F001 — LM Studio GPU data | Sample LM Studio models now say `Not reported` for GPU memory. The copied diagnostic carries the same limitation. |
+| F002 — macOS download choice | Mac browsers choose Apple silicon or Intel explicitly. iPhone and iPad visitors get the releases page, never a desktop binary. |
+| F003 — default tests | Playwright runs in one worker. `npm test` and the full test command now finish reliably. |
+| F004 — 200% reflow | The narrow header, download choices, and dashboard controls wrap without horizontal page overflow. |
+| F005 — touch targets | Navigation, banner, footer, and controls meet the 44 px target. |
+| F006 — claims | There are 14 tested claims, including native endpoint parsing, event changes, privacy, demo isolation, installers, accessibility, and release selection. |
+| F007 — missing route status | Known client routes are rewritten explicitly; other paths return the styled `404.html` with HTTP 404. |
+| F008 — unclear copy | The landing page, demo, errors, and 404 use direct task-focused wording. The copy audit has no flagged sentences. |
+| F009 — deployment docs | README now documents static-site build and factory deployment, plus Linux desktop prerequisites. |
+
+## Run and verify
+
+From a clean checkout:
 
 ```sh
 npm ci
-npm run dev:site
-```
-
-Open `http://127.0.0.1:4173/demo` for the isolated sample.
-
-For the desktop app, install the Tauri 2 platform prerequisites and run:
-
-```sh
-npm run tauri dev
-```
-
-## Verification
-
-Run from `/work/repo`:
-
-```sh
 npm run test:all
 npm run build
 cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
 cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
 ```
 
-Recorded local results on 2026-08-28:
+All 14 commands in `.factory/claims.json` were also run individually from the clean install. They passed. The command set exercises the demo entry point and includes a local HTTP fixture for the native runtime scanner, a mocked failed checksum in both installer scripts, and observable browser outcomes rather than source-text checks.
 
-- Vitest: 4 passed.
-- Playwright: 23 passed across desktop Chromium and a 390 px mobile viewport; 1 inapplicable project case skipped.
-- Rust: 2 passed; doc tests passed.
-- Native package smoke test: Linux `.deb` built successfully with Tauri 2.11.
-- Axe: no serious or critical findings on all routes, in light and dark treatments.
-- Browser smoke test: one `h1`, one `main`, `lang=en`, all images have alt text, and no console errors.
-- Production site bundle: 7.55 KB JavaScript gzip and 4.83 KB CSS gzip.
-- Hero WebP: 56 KB desktop and 20 KB mobile.
-- Lighthouse mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100.
-- Lighthouse metrics: FCP 1.1 s, LCP 1.3 s, total blocking time 100 ms, CLS 0.
-- `npm run build` writes `dist/app/index.html` and `dist/site/index.html`.
+Recorded results on 2026-09-06:
 
-Claim definitions and exact commands are in `.factory/claims.json`. Demo details are in `.factory/demo.md`.
+- `npm run test:all`: 7 Vitest tests, 34 Playwright tests (two platform-inapplicable cases skipped), and Rust tests passed.
+- `npm run build`: passed. The static site output is 7.77 KB gzip JavaScript and 4.95 KB gzip CSS.
+- Rust format and Clippy with warnings denied: passed.
+- Local Static Web Apps emulation returned 200 for `/`, `/demo`, `/privacy`, and `/terms`; `/missing-page` returned the styled page with HTTP 404.
+- Live HTTPS check passed: correct title, language, one main landmark and h1, no missing image alternatives, no unlabeled buttons, and no console errors.
+- Live Playwright Axe check found no serious or critical issues. The standalone Axe CLI could not use the worker image's mismatched ChromeDriver, so the Playwright Axe integration was used instead.
+- Live Lighthouse: Performance 100, Accessibility 100, Best Practices 100, SEO 100; LCP 1.1 s, total blocking time 0 ms, CLS 0.
+- Fresh desktop and phone sessions stated the job as “See what keeps your models loaded,” the audience as local-model users investigating memory and reloads, and the first action as “Try it with sample data.” The sample showed populated data, kept its demo label, reset correctly, and did not change real storage.
 
-## Known limits
+## Release and deployment
 
-- Jan's documented model list shows server availability but does not prove memory residency. Jan is marked limited.
-- LM Studio does not report per-model GPU memory in the supported response used here. Its attribution remains partial.
-- The app attributes runtime processes, not the separate client that sent a prompt. It never guesses missing client ownership.
-- GPU reporting depends on the runtime response. Shared or system GPU memory can differ from process RAM.
-- Release packages are unsigned until platform certificates are configured.
+Release `v0.1.2` is published from the implementation candidate:
 
-## Needs operator action
+`https://github.com/B-Divyesh/sf-local-model-residency/releases/tag/v0.1.2`
 
-- Add macOS signing and notarization using `APPLE_CERTIFICATE`, its password, Apple ID credentials, and team ID.
-- Add Windows Authenticode signing using `WINDOWS_CERT_PFX` and its password.
-- Wire those secrets into `.github/workflows/release.yml`; the current workflow intentionally emits unsigned builds.
-- Deploy `dist/site` through factory infrastructure. No DNS or infrastructure changes were made here.
+The successful GitHub Actions release run is `34016999372`. It publishes Apple-silicon and Intel macOS DMGs, Windows MSI and EXE files, Linux AppImage and DEB files, `SHA256SUMS`, and `latest.json`.
 
-## Release
+The Linux AppImage was downloaded into a fresh temporary directory, verified against the published `SHA256SUMS`, and launched under a new XDG configuration and data directory. It stayed open for the ten-second consumer smoke test. Fresh live Mac selection showed two v0.1.2 DMG choices; a fresh iPhone session showed no direct desktop-binary link.
 
-The `v0.1.0` tag triggers `.github/workflows/release.yml`. The matrix publishes arm64 and x86_64 macOS DMGs, Windows MSI and EXE installers, Linux AppImage and DEB packages, `SHA256SUMS`, and `latest.json`.
+The final static site was deployed to `https://local-model-residency.sociobot.in`. This is a static product; no application data or server state is required.
 
-Release: `https://github.com/B-Divyesh/sf-local-model-residency/releases/tag/v0.1.0`. All six platform assets are published. The Linux DEB was downloaded from the release and matched against the published SHA-256 entry.
+## Known limits and operator work
 
-## Independent verification 1
+- LM Studio does not provide per-model GPU memory in the documented response used by the app. It is shown as not reported, not estimated.
+- Jan's documented model endpoint shows availability, not model memory residency. It is marked limited.
+- The app attributes a runtime process. It does not invent ownership by a separate client that sent a prompt.
+- GPU values can differ from process RAM, especially for shared memory.
+- Release packages are unsigned. macOS signing/notarization needs `APPLE_CERTIFICATE` and associated Apple signing credentials; Windows signing needs `WINDOWS_CERT_PFX` and its password. An operator must add those to the release workflow before distributing signed packages.
+- The researched brief specifies a free product. There is no paid offer or billing dependency.
 
-Candidate `cc7975c8c1329f2d3fa5100862ed6008914ffb31` was verified against the live site and the published Linux AppImage. The live assets match the clean candidate build. The installer checksum, app launch, local endpoint scan, malformed-response recovery, in-app sample, and restart persistence were exercised.
+## References
 
-The release is not accepted. Required follow-up is recorded in `.factory/verification-1.md`: correct the false LM Studio GPU sample, fix macOS/iOS download selection, make the default test command reliable, repair 200% text reflow and touch targets, complete claim coverage, return real 404 status, remove metaphor copy, and add README deployment instructions.
-
-Verification commands included all six commands from `.factory/claims.json`, `npm run build`, Rust test/fmt/clippy, axe across live routes and themes, the factory URL verifier, and live Lighthouse. The exact claim commands passed. The default `npm test` failed twice because Chromium crashed in the final mobile test; a one-worker diagnostic passed 23 tests with 1 skip.
+- Demo behavior: `.factory/demo.md`
+- Claim manifest: `.factory/claims.json`
+- Design and asset provenance: `.factory/design.md`
+- Earlier rejected verification: `.factory/verification-1.md`
+- Plain-language audit: `.factory/copy-audit.md`
